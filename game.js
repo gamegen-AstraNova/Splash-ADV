@@ -938,7 +938,8 @@
     if (surface) {
       const knob = surface.querySelector(".free-joystick");
       const items = surface.querySelector(".free-items");
-      let activePointerId = null;
+      let joystickPointerId = null;
+      let actionPointerId = null;
       let itemTimer = 0;
       let rightActionActive = false;
       let joystickRing = null;
@@ -970,16 +971,15 @@
           }
           return;
         }
-        if (activePointerId !== null) return;
-
-        event.preventDefault();
-        activePointerId = event.pointerId;
-        surface.setPointerCapture?.(event.pointerId);
         const bounds = surface.getBoundingClientRect();
         const localX = event.clientX - bounds.left;
         const localY = event.clientY - bounds.top;
 
         if (event.clientX < innerWidth / 2) {
+          if (joystickPointerId !== null) return;
+          event.preventDefault();
+          joystickPointerId = event.pointerId;
+          surface.setPointerCapture?.(event.pointerId);
           joystickOrigin = {
             clientX: event.clientX,
             clientY: event.clientY,
@@ -998,6 +998,10 @@
           return;
         }
 
+        if (actionPointerId !== null) return;
+        event.preventDefault();
+        actionPointerId = event.pointerId;
+        surface.setPointerCapture?.(event.pointerId);
         rightActionActive = true;
         itemTimer = window.setTimeout(() => {
           itemTimer = 0;
@@ -1011,7 +1015,7 @@
       });
 
       surface.addEventListener("pointermove", (event) => {
-        if (event.pointerId !== activePointerId || !joystickOrigin) return;
+        if (event.pointerId !== joystickPointerId || !joystickOrigin) return;
         const dx = event.clientX - joystickOrigin.clientX;
         const dy = event.clientY - joystickOrigin.clientY;
         const distance = Math.hypot(dx, dy);
@@ -1025,14 +1029,18 @@
       });
 
       const stopSurfaceAction = (event) => {
-        if (event.pointerId !== activePointerId) return;
+        if (event.pointerId === joystickPointerId) {
+          joystickPointerId = null;
+          heldDirection = latestKeyboardDirection();
+          hideTouchJoystick();
+          if (heldDirection !== null) updateKeyboardJoystick(heldDirection);
+          return;
+        }
+        if (event.pointerId !== actionPointerId) return;
         clearItemTimer();
         if (event.type === "pointerup" && rightActionActive) placeBomb();
-        activePointerId = null;
+        actionPointerId = null;
         rightActionActive = false;
-        heldDirection = latestKeyboardDirection();
-        hideTouchJoystick();
-        if (heldDirection !== null) updateKeyboardJoystick(heldDirection);
       };
       surface.addEventListener("pointerup", stopSurfaceAction);
       surface.addEventListener("pointercancel", stopSurfaceAction);
