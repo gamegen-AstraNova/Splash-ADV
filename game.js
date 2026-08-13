@@ -26,6 +26,21 @@
   const UI_FEEDBACK_SOUND_PATH = "./assets/audio/ui-feedback-sfx.mp3";
   const STAGE_VICTORY_FANFARE_SOUND_PATH =
     "./assets/audio/stage-victory-fanfare-sfx.mp3";
+  const CG_SHUTTER_SOUND_PATH = "./assets/audio/camera-shutter-sfx.mp3";
+  const CG_FLASH_REVEAL_MS = 220;
+  const CG_FLASH_END_MS = 560;
+  const CHEAT_SEQUENCE = [
+    "ArrowUp",
+    "ArrowUp",
+    "ArrowDown",
+    "ArrowDown",
+    "ArrowLeft",
+    "ArrowRight",
+    "ArrowLeft",
+    "ArrowRight",
+    "b",
+    "a",
+  ];
 
   const STORAGE = {
     character: "splash-adv-selected-character",
@@ -33,6 +48,8 @@
     best: "splash-adv-best",
     bgmEnabled: "splash-adv-bgm-enabled",
     sfxEnabled: "splash-adv-sfx-enabled",
+    cgMode: "splash-adv-cg-mode-enabled",
+    unlockedCgs: "splash-adv-unlocked-cgs",
   };
 
   const DIRECTIONS = [
@@ -48,9 +65,30 @@
   };
 
   const CHARACTERS = [
-    { id: "Asteria", image: "./sprites/Asteria.png" },
-    { id: "Nyx", image: "./sprites/Nyx.png" },
-    { id: "Lumi", image: "./sprites/Lumi.png" },
+    {
+      id: "Asteria",
+      slug: "asteria",
+      image: "./sprites/Asteria.png",
+      swimsuitImage: "./sprites/swimsuit/Asteria_swimsuit.png",
+      menuImage: "./art/keyart-layers/01-asteria.png",
+      swimsuitMenuImage: "./art/keyart-layers/swimsuit/01-asteria.png",
+    },
+    {
+      id: "Nyx",
+      slug: "nyx",
+      image: "./sprites/Nyx.png",
+      swimsuitImage: "./sprites/swimsuit/Nyx_swimsuit.png",
+      menuImage: "./art/keyart-layers/03-nyx.png",
+      swimsuitMenuImage: "./art/keyart-layers/swimsuit/03-nyx.png",
+    },
+    {
+      id: "Lumi",
+      slug: "lumi",
+      image: "./sprites/Lumi.png",
+      swimsuitImage: "./sprites/swimsuit/Lumi_swimsuit.png",
+      menuImage: "./art/keyart-layers/02-lumi.png",
+      swimsuitMenuImage: "./art/keyart-layers/swimsuit/02-lumi.png",
+    },
   ];
 
   const SPRITES = {
@@ -188,6 +226,9 @@
   const uiInteractionSound = new Audio(UI_FEEDBACK_SOUND_PATH);
   const uiDisabledSound = new Audio(UI_FEEDBACK_SOUND_PATH);
   const stageVictoryFanfareSound = new Audio(STAGE_VICTORY_FANFARE_SOUND_PATH);
+  const cgShutterSound = CG_SHUTTER_SOUND_PATH
+    ? new Audio(CG_SHUTTER_SOUND_PATH)
+    : null;
   for (const music of [backgroundMusic, bossMusic]) {
     music.loop = true;
     music.preload = "auto";
@@ -206,6 +247,7 @@
     uiInteractionSound,
     uiDisabledSound,
     stageVictoryFanfareSound,
+    ...(cgShutterSound ? [cgShutterSound] : []),
   ]) {
     sound.preload = "auto";
   }
@@ -224,8 +266,12 @@
   uiDisabledSound.playbackRate = 0.72;
   uiDisabledSound.preservesPitch = false;
   stageVictoryFanfareSound.volume = 0.76;
+  if (cgShutterSound) cgShutterSound.volume = 0.82;
 
   let selectedCharacter;
+  let cgModeEnabled;
+  let unlockedCgs;
+  let cheatProgress = 0;
   let game = null;
   let gameDom = null;
   let frameId = 0;
@@ -263,9 +309,80 @@
     },
   };
 
+  function readUnlockedCgs() {
+    try {
+      const saved = JSON.parse(safeStorage.get(STORAGE.unlockedCgs) ?? "[]");
+      if (!Array.isArray(saved)) return new Set();
+      const validKeys = new Set(cgEntries().map((entry) => entry.key));
+      return new Set(saved.filter((key) => validKeys.has(key)));
+    } catch {
+      return new Set();
+    }
+  }
+
+  function persistUnlockedCgs() {
+    safeStorage.set(STORAGE.unlockedCgs, JSON.stringify([...unlockedCgs].sort()));
+  }
+
+  function characterById(characterId) {
+    return (
+      CHARACTERS.find((character) => character.id === characterId) ??
+      CHARACTERS[2]
+    );
+  }
+
+  function characterAsset(character, kind) {
+    if (kind === "menu") {
+      return cgModeEnabled && character.swimsuitMenuImage
+        ? character.swimsuitMenuImage
+        : character.menuImage;
+    }
+    return cgModeEnabled && character.swimsuitImage
+      ? character.swimsuitImage
+      : character.image;
+  }
+
+  function cgKey(characterId, stageIndex, outcome) {
+    return `${characterById(characterId).slug}:${stageIndex}:${outcome}`;
+  }
+
+  function cgEntry(characterId, stageIndex, outcome) {
+    const character = characterById(characterId);
+    const stageNumber = String(stageIndex + 1).padStart(2, "0");
+    const base = `./assets/cg/${character.slug}/stage-${stageNumber}/${outcome}`;
+    return {
+      key: cgKey(character.id, stageIndex, outcome),
+      characterId: character.id,
+      characterSlug: character.slug,
+      stageIndex,
+      outcome,
+      image: `${base}.webp`,
+      video: `${base}.mp4`,
+    };
+  }
+
+  function cgEntries(characterId = null) {
+    const characters = characterId
+      ? [characterById(characterId)]
+      : CHARACTERS;
+    return characters.flatMap((character) =>
+      STAGES.flatMap((_, stageIndex) => [
+        cgEntry(character.id, stageIndex, "victory"),
+        cgEntry(character.id, stageIndex, "defeat"),
+      ]),
+    );
+  }
+
   let bgmEnabled = safeStorage.get(STORAGE.bgmEnabled) !== "false";
   let sfxEnabled = safeStorage.get(STORAGE.sfxEnabled) !== "false";
+  cgModeEnabled = safeStorage.get(STORAGE.cgMode) === "true";
+  unlockedCgs = readUnlockedCgs();
   selectedCharacter = readCharacter();
+
+  function applyCgModeState() {
+    document.documentElement.classList.toggle("cg-mode-enabled", cgModeEnabled);
+    document.documentElement.dataset.cgMode = cgModeEnabled ? "enabled" : "disabled";
+  }
 
   function armMusicActivation() {
     if (!bgmEnabled) return;
@@ -402,13 +519,25 @@
     document
       .querySelector('[data-action="reset-progress"]')
       ?.addEventListener("click", () => {
-        const confirmed = window.confirm(
-          "確定要重置所有關卡進度嗎？通關紀錄與最佳時間將被清除，且無法復原。",
-        );
-        if (!confirmed) return;
-        safeStorage.remove(STORAGE.cleared);
-        safeStorage.remove(STORAGE.best);
-        window.location.reload();
+        showModal(`
+          <section class="help-dialog progress-reset-dialog" data-modal-static role="dialog" aria-modal="true" aria-labelledby="reset-progress-title">
+            <button class="close-button" data-close aria-label="關閉">×</button>
+            <span class="panel-label">RESET DATA</span>
+            <h2 id="reset-progress-title">重置所有進度？</h2>
+            <p>通關紀錄、最佳時間、CG 解鎖與密技模式都會被清除，且無法復原。角色選擇與音訊設定會保留。</p>
+            <div class="result-actions">
+              <button class="secondary-button" type="button" data-close>取消</button>
+              <button class="primary-button compact reset-confirm-button" type="button" data-reset-confirm>確認重置</button>
+            </div>
+          </section>
+        `);
+        document.querySelector("[data-reset-confirm]")?.addEventListener("click", () => {
+          safeStorage.remove(STORAGE.cleared);
+          safeStorage.remove(STORAGE.best);
+          safeStorage.remove(STORAGE.cgMode);
+          safeStorage.remove(STORAGE.unlockedCgs);
+          window.location.reload();
+        });
       });
   }
 
@@ -464,10 +593,65 @@
   }
 
   function selectedSprite() {
-    return (
-      CHARACTERS.find((character) => character.id === selectedCharacter) ??
-      CHARACTERS[2]
-    );
+    const character = characterById(selectedCharacter);
+    return { ...character, image: characterAsset(character, "sprite") };
+  }
+
+  function showCgModeToast() {
+    document.querySelector(".cg-mode-toast")?.remove();
+    const toast = document.createElement("div");
+    toast.className = "cg-mode-toast";
+    toast.setAttribute("role", "status");
+    toast.innerHTML = `
+      <strong>CG MODE</strong>
+      <span>泳裝與 CG 模式已啟用</span>
+    `;
+    document.body.append(toast);
+    window.setTimeout(() => toast.classList.add("is-visible"), 20);
+    window.setTimeout(() => {
+      toast.classList.remove("is-visible");
+      window.setTimeout(() => toast.remove(), 260);
+    }, 2800);
+  }
+
+  function unlockCgMode() {
+    if (cgModeEnabled) return;
+    cgModeEnabled = true;
+    cheatProgress = 0;
+    safeStorage.set(STORAGE.cgMode, "true");
+    applyCgModeState();
+    const isMenu = Boolean(document.querySelector(".menu-screen"));
+    if (isMenu) renderMenu();
+    showCgModeToast();
+    playSoundEffect(uiConfirmSound);
+    dirty = true;
+  }
+
+  function trackCheat(event) {
+    if (cgModeEnabled || event.repeat || event.ctrlKey || event.metaKey || event.altKey) {
+      return false;
+    }
+    if (
+      event.target instanceof Element &&
+      event.target.closest("input, textarea, select, [contenteditable='true']")
+    ) {
+      return false;
+    }
+    const normalized = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+    if (normalized === CHEAT_SEQUENCE[cheatProgress]) {
+      cheatProgress += 1;
+      if (cheatProgress === CHEAT_SEQUENCE.length) unlockCgMode();
+      return true;
+    }
+    cheatProgress = normalized === CHEAT_SEQUENCE[0] ? 1 : 0;
+    return cheatProgress === 1;
+  }
+
+  function unlockCg(entry) {
+    if (unlockedCgs.has(entry.key)) return false;
+    unlockedCgs.add(entry.key);
+    persistUnlockedCgs();
+    return true;
   }
 
   function highestCleared() {
@@ -530,6 +714,9 @@
     const cleared = highestCleared();
     const meta =
       cleared < 0 ? "尚無通關紀錄" : `已突破 ${cleared + 1} / ${STAGES.length} 區域`;
+    const asteria = characterById("Asteria");
+    const nyx = characterById("Nyx");
+    const lumi = characterById("Lumi");
 
     document.body.innerHTML = `
       <main class="menu-screen">
@@ -537,9 +724,9 @@
           <div class="menu-keyart-stage">
             <img class="menu-art menu-art-background" src="./art/keyart-layers/00-background.png" alt="">
             <img class="menu-art menu-art-splashes" src="./art/keyart-layers/03-water-splashes.png" alt="">
-            <img class="menu-character menu-character-asteria" src="./art/keyart-layers/01-asteria.png" alt="Asteria">
-            <img class="menu-character menu-character-nyx" src="./art/keyart-layers/03-nyx.png" alt="Nyx">
-            <img class="menu-character menu-character-lumi" src="./art/keyart-layers/02-lumi.png" alt="Lumi">
+            <img class="menu-character menu-character-asteria" src="${characterAsset(asteria, "menu")}" alt="Asteria">
+            <img class="menu-character menu-character-nyx" src="${characterAsset(nyx, "menu")}" alt="Nyx">
+            <img class="menu-character menu-character-lumi" src="${characterAsset(lumi, "menu")}" alt="Lumi">
             <div class="menu-art menu-art-balls" aria-hidden="true">
               <img class="menu-water-ball ball-1" src="./art/keyart-layers/02-water-balls_01.png" alt="">
               <img class="menu-water-ball ball-2" src="./art/keyart-layers/02-water-balls_02.png" alt="">
@@ -557,7 +744,10 @@
           <button class="progress-reset-button" type="button" data-action="reset-progress">重置進度</button>
         </div>
         <section class="menu-card">
-          <div class="eyebrow">AstraNova</div>
+          <div class="menu-card-heading">
+            <div class="eyebrow">AstraNova</div>
+            ${cgModeEnabled ? '<div class="cg-mode-badge"><span></span>CG MODE</div>' : ""}
+          </div>
           <h1>Splash ADV</h1>
           <p class="menu-lead">突破五個區域，阻止海盜空港的入侵！</p>
           ${characterSelectorMarkup()}
@@ -566,6 +756,11 @@
               <span>開始任務</span><small>5 STAGES</small>
             </button>
             <button class="secondary-button" data-action="help">遊戲說明</button>
+            ${
+              cgModeEnabled
+                ? `<button class="secondary-button gallery-button" data-action="gallery"><span>CG 圖鑑</span><small>${unlockedCgs.size} / ${cgEntries().length}</small></button>`
+                : ""
+            }
           </div>
           <div class="menu-meta">
             <span class="menu-progress">鍵盤・觸控皆可・${meta}</span>
@@ -588,6 +783,9 @@
     document
       .querySelector('[data-action="help"]')
       .addEventListener("click", showHelp);
+    document
+      .querySelector('[data-action="gallery"]')
+      ?.addEventListener("click", () => showCgGallery(selectedCharacter));
 
     for (const option of document.querySelectorAll(".character-option")) {
       option.addEventListener("click", () => {
@@ -613,7 +811,7 @@
           aria-label="選擇 ${character.id}"
           aria-pressed="${character.id === selectedCharacter}"
         >
-          <img class="character-option__portrait" src="${character.image}" alt="" draggable="false">
+          <img class="character-option__portrait" src="${characterAsset(character, "sprite")}" alt="" draggable="false">
           <span class="character-option__name">${character.id}</span>
         </button>
       `,
@@ -768,8 +966,142 @@
     });
   }
 
+  function showCgGallery(characterId = selectedCharacter) {
+    if (!cgModeEnabled) return;
+    const activeCharacter = characterById(characterId);
+    const entries = cgEntries(activeCharacter.id);
+    const tabs = CHARACTERS.map(
+      (character) => `
+        <button
+          class="cg-gallery-tab${character.id === activeCharacter.id ? " is-active" : ""}"
+          type="button"
+          data-gallery-character="${character.id}"
+          aria-selected="${character.id === activeCharacter.id}"
+        >${character.id}</button>
+      `,
+    ).join("");
+    const cards = entries
+      .map((entry) => {
+        const unlocked = unlockedCgs.has(entry.key);
+        const outcomeLabel = entry.outcome === "victory" ? "勝利" : "失敗";
+        return `
+          <button
+            class="cg-gallery-card${unlocked ? " is-unlocked" : " is-locked"}"
+            type="button"
+            data-cg-key="${entry.key}"
+            ${unlocked ? "" : "disabled"}
+            aria-label="${unlocked ? `${entry.characterId} 第 ${entry.stageIndex + 1} 關 ${outcomeLabel} CG` : `未解鎖 CG` }"
+          >
+            <span class="cg-gallery-preview">
+              ${
+                unlocked
+                  ? `<img src="${entry.image}" alt="" loading="lazy" decoding="async">`
+                  : '<span class="cg-gallery-lock" aria-hidden="true">◆</span>'
+              }
+            </span>
+            <span class="cg-gallery-card-copy">
+              <small>STAGE ${String(entry.stageIndex + 1).padStart(2, "0")}</small>
+              <strong>${outcomeLabel}</strong>
+            </span>
+          </button>
+        `;
+      })
+      .join("");
+
+    showModal(`
+      <section class="cg-gallery-dialog" role="dialog" aria-modal="true" aria-labelledby="cg-gallery-title">
+        <button class="close-button" data-close aria-label="關閉">×</button>
+        <span class="panel-label">COLLECTION</span>
+        <div class="cg-gallery-heading">
+          <div>
+            <h2 id="cg-gallery-title">CG 圖鑑</h2>
+          </div>
+        </div>
+        <div class="cg-gallery-tabs-row">
+          <div class="cg-gallery-tabs" role="tablist" aria-label="角色">${tabs}</div>
+          <strong class="cg-gallery-count">${unlockedCgs.size} / ${cgEntries().length}</strong>
+        </div>
+        <div class="cg-gallery-grid">${cards}</div>
+      </section>
+    `);
+
+    for (const tab of document.querySelectorAll("[data-gallery-character]")) {
+      tab.addEventListener("click", () => showCgGallery(tab.dataset.galleryCharacter));
+    }
+    for (const card of document.querySelectorAll(".cg-gallery-card.is-unlocked")) {
+      card.addEventListener("click", () => {
+        const entry = cgEntries().find((candidate) => candidate.key === card.dataset.cgKey);
+        if (entry) showCgViewer(entry);
+      });
+    }
+  }
+
+  function showCgViewer(entry) {
+    if (!unlockedCgs.has(entry.key)) return;
+    const outcomeLabel = entry.outcome === "victory" ? "勝利" : "失敗";
+    showModal(`
+      <section class="cg-viewer" data-modal-static role="dialog" aria-modal="true" aria-label="CG 全螢幕檢視">
+        <div class="cg-viewer-stage">
+          <video
+            class="cg-viewer-media"
+            src="${entry.video}"
+            muted
+            loop
+            playsinline
+            preload="metadata"
+          ></video>
+          <img class="cg-viewer-media" src="${entry.image}" alt="${entry.characterId} 第 ${entry.stageIndex + 1} 關 ${outcomeLabel} CG" hidden>
+        </div>
+        <div class="cg-viewer-topbar">
+          <div>
+            <span>STAGE ${String(entry.stageIndex + 1).padStart(2, "0")}</span>
+            <strong>${entry.characterId} · ${outcomeLabel}</strong>
+          </div>
+          <button class="cg-viewer-close" type="button" data-close aria-label="關閉">×</button>
+        </div>
+        <div class="cg-viewer-switch" role="group" aria-label="CG 顯示模式">
+          <button type="button" data-cg-view="static" aria-pressed="false">靜態</button>
+          <button class="is-active" type="button" data-cg-view="animated" aria-pressed="true">動態</button>
+        </div>
+      </section>
+    `);
+    const backdrop = document.querySelector(".modal-backdrop");
+    const viewer = backdrop?.querySelector(".cg-viewer");
+    const video = viewer?.querySelector("video");
+    const image = viewer?.querySelector("img");
+    if (!backdrop || !viewer || !video || !image) return;
+    backdrop.classList.add("cg-viewer-backdrop");
+    document.body.classList.add("cg-overlay-open");
+
+    const setView = (view) => {
+      const animated = view === "animated";
+      video.hidden = !animated;
+      image.hidden = animated;
+      for (const button of viewer.querySelectorAll("[data-cg-view]")) {
+        const active = button.dataset.cgView === view;
+        button.classList.toggle("is-active", active);
+        button.setAttribute("aria-pressed", String(active));
+      }
+      if (animated) {
+        video.play().catch(() => setView("static"));
+      } else {
+        video.pause();
+      }
+    };
+
+    video.addEventListener("error", () => setView("static"), { once: true });
+    for (const button of viewer.querySelectorAll("[data-cg-view]")) {
+      button.addEventListener("click", () => setView(button.dataset.cgView));
+    }
+    viewer.querySelector("[data-close]")?.addEventListener("click", () => {
+      video.pause();
+      document.body.classList.remove("cg-overlay-open");
+    });
+    setView("animated");
+  }
+
   function showModal(content) {
-    document.querySelector(".modal-backdrop")?.remove();
+    closeModal();
     const backdrop = document.createElement("div");
     backdrop.className = "modal-backdrop";
     backdrop.innerHTML = content;
@@ -777,14 +1109,17 @@
       const staticModal = backdrop.querySelector("[data-modal-static]");
       if (event.target === backdrop && staticModal) return;
       if (event.target === backdrop || event.target.closest("[data-close]")) {
-        backdrop.remove();
+        closeModal();
       }
     });
     document.body.append(backdrop);
   }
 
   function closeModal() {
-    document.querySelector(".modal-backdrop")?.remove();
+    const backdrop = document.querySelector(".modal-backdrop");
+    for (const video of backdrop?.querySelectorAll("video") ?? []) video.pause();
+    backdrop?.remove();
+    document.body.classList.remove("cg-overlay-open");
   }
 
   function createStage(stageIndex, carry = null) {
@@ -1608,7 +1943,105 @@
     showResult(true, elapsed);
   }
 
+  function showResultCgSequence(entry, onDismiss) {
+    closeModal();
+    document.body.classList.add("cg-overlay-open");
+    const overlay = document.createElement("div");
+    overlay.className = "cg-unlock-overlay is-video";
+    overlay.setAttribute("role", "dialog");
+    overlay.setAttribute("aria-modal", "true");
+    overlay.setAttribute("aria-label", "CG 解鎖演出");
+    overlay.tabIndex = -1;
+    overlay.innerHTML = `
+      <video
+        class="cg-unlock-video"
+        src="${entry.video}"
+        muted
+        autoplay
+        playsinline
+        preload="auto"
+      ></video>
+      <div class="cg-unlock-loading"><i></i><span>CG LOADING</span></div>
+      <div class="cg-photo-stage" aria-hidden="true">
+        <figure class="cg-photo-frame">
+          <img src="${entry.image}" alt="">
+        </figure>
+        <div class="cg-unlock-notice">
+          <span>COLLECTION UPDATED</span>
+          <strong>CG 已解鎖</strong>
+          <small>點擊畫面任意位置繼續</small>
+        </div>
+      </div>
+      <div class="cg-capture-flash" aria-hidden="true"></div>
+    `;
+    const video = overlay.querySelector("video");
+    let phase = "video";
+    let captureStarted = false;
+
+    const beginCapture = () => {
+      if (captureStarted) return;
+      captureStarted = true;
+      overlay.classList.add("is-flashing");
+      if (cgShutterSound) playSoundEffect(cgShutterSound);
+      window.setTimeout(() => {
+        video.pause();
+        unlockCg(entry);
+        phase = "photo";
+        overlay.classList.remove("is-video");
+        overlay.classList.add("is-photo");
+        overlay.querySelector(".cg-photo-stage")?.setAttribute("aria-hidden", "false");
+        overlay.focus({ preventScroll: true });
+      }, CG_FLASH_REVEAL_MS);
+      window.setTimeout(
+        () => overlay.classList.remove("is-flashing"),
+        CG_FLASH_END_MS,
+      );
+    };
+
+    const dismiss = (event) => {
+      if (phase !== "photo") return;
+      event?.preventDefault();
+      event?.stopPropagation();
+      phase = "closed";
+      video.pause();
+      overlay.remove();
+      document.body.classList.remove("cg-overlay-open");
+      onDismiss();
+    };
+
+    video.addEventListener("playing", () => overlay.classList.add("has-started"));
+    video.addEventListener("ended", beginCapture, { once: true });
+    video.addEventListener("error", beginCapture, { once: true });
+    overlay.addEventListener("click", dismiss);
+    overlay.addEventListener("keydown", (event) => {
+      if (["Enter", " ", "Escape"].includes(event.key)) dismiss(event);
+    });
+    document.body.append(overlay);
+    video.play().catch(() => {
+      overlay.classList.add("needs-play");
+      const loadingLabel = overlay.querySelector(".cg-unlock-loading span");
+      if (loadingLabel) loadingLabel.textContent = "點擊畫面開始播放";
+      const resume = () => {
+        video.play().then(() => overlay.classList.remove("needs-play")).catch(beginCapture);
+      };
+      overlay.addEventListener("pointerdown", resume, { once: true });
+    });
+  }
+
   function showResult(success, elapsed = Date.now() - game.startedAt) {
+    const entry = cgEntry(
+      selectedCharacter,
+      game.stageIndex,
+      success ? "victory" : "defeat",
+    );
+    if (cgModeEnabled) {
+      showResultCgSequence(entry, () => showResultModal(success, elapsed));
+      return;
+    }
+    showResultModal(success, elapsed);
+  }
+
+  function showResultModal(success, elapsed) {
     const stage = STAGES[game.stageIndex];
     const score = Math.max(
       1000,
@@ -1912,6 +2345,14 @@
     if (knob) knob.style.transform = "translate(-50%,-50%)";
   }
 
+  window.addEventListener(
+    "keydown",
+    (event) => {
+      trackCheat(event);
+    },
+    true,
+  );
+
   window.addEventListener("keydown", (event) => {
     if (!game || game.status !== "playing") return;
     const direction = directionFromKey(event.key);
@@ -1955,6 +2396,7 @@
 
   armMusicActivation();
   armUiSoundFeedback();
+  applyCgModeState();
 
   renderMenu();
 
