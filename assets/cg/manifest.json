@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "basePath": "assets/cg",
+  "layout": "{character}/stage-{stage}/{outcome}.{extension}",
+  "outcomes": [
+    "victory",
+    "defeat"
+  ],
+  "characters": {
+    "asteria": {
+      "displayName": "Asteria",
+      "staticStages": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "animatedStages": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "animationStatus": "complete-q8-remacri-4x"
+    },
+    "nyx": {
+      "displayName": "Nyx",
+      "staticStages": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "animatedStages": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "animationStatus": "complete-q8-remacri-4x"
+    },
+    "lumi": {
+      "displayName": "Lumi",
+      "staticStages": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "animatedStages": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "animationStatus": "complete-q8-remacri-4x"
+    }
+  },
+  "filesPerStage": {
+    "victory": {
+      "image": "victory.webp",
+      "video": "victory.mp4"
+    },
+    "defeat": {
+      "image": "defeat.webp",
+      "video": "defeat.mp4"
+    }
+  }
+}
