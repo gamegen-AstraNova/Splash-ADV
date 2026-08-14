@@ -114,19 +114,6 @@ button:focus-visible {
 .menu-character-nyx{translate:calc(var(--parallax-x) * .82) calc(var(--parallax-y) * .82)}
 .menu-character-lumi{translate:calc(var(--parallax-x) * .9) calc(var(--parallax-y) * .9)}
 .menu-art-balls{translate:var(--parallax-x) var(--parallax-y)}
-.menu-water-ball{position:absolute;display:block;height:auto;transform-origin:center;will-change:transform;pointer-events:none}
-.ball-1{left:86%;top:16.9%;width:3.6%;animation:water-ball-1 4.4s ease-in-out -1.1s infinite}
-.ball-2{left:93.1%;top:28.9%;width:10.2%;animation:water-ball-2 5.8s ease-in-out -.8s infinite}
-.ball-3{left:50.2%;top:29.3%;width:3%;animation:water-ball-3 4.9s ease-in-out -2.1s infinite}
-.ball-4{left:89.4%;top:48.8%;width:4.6%;animation:water-ball-4 5.2s ease-in-out -1.7s infinite}
-.ball-5{left:46.9%;top:68.8%;width:10.8%;animation:water-ball-5 6.3s ease-in-out -2.8s infinite}
-.ball-6{left:89.5%;top:87.7%;width:12%;animation:water-ball-6 6.9s ease-in-out -3.2s infinite}
-@keyframes water-ball-1{0%,100%{transform:translate(-50%,-50%) translate3d(0,0,0) scale(1) rotate(-2deg)}50%{transform:translate(-50%,-50%) translate3d(7px,-9px,0) scale(1.08,.96) rotate(3deg)}}
-@keyframes water-ball-2{0%,100%{transform:translate(-50%,-50%) translate3d(0,0,0) scale(1) rotate(1deg)}50%{transform:translate(-50%,-50%) translate3d(-13px,11px,0) scale(1.06,.95) rotate(-3deg)}}
-@keyframes water-ball-3{0%,100%{transform:translate(-50%,-50%) translate3d(0,0,0) scale(1) rotate(2deg)}50%{transform:translate(-50%,-50%) translate3d(6px,8px,0) scale(1.1,.94) rotate(-4deg)}}
-@keyframes water-ball-4{0%,100%{transform:translate(-50%,-50%) translate3d(0,0,0) scale(1) rotate(-2deg)}50%{transform:translate(-50%,-50%) translate3d(-9px,-12px,0) scale(1.07,.95) rotate(4deg)}}
-@keyframes water-ball-5{0%,100%{transform:translate(-50%,-50%) translate3d(0,0,0) scale(1) rotate(1deg)}50%{transform:translate(-50%,-50%) translate3d(14px,-10px,0) scale(1.05,.96) rotate(-3deg)}}
-@keyframes water-ball-6{0%,100%{transform:translate(-50%,-50%) translate3d(0,0,0) scale(1) rotate(-1deg)}50%{transform:translate(-50%,-50%) translate3d(-15px,13px,0) scale(1.06,.95) rotate(3deg)}}
 .menu-character {
   max-width:none;
   height:auto;
@@ -1767,6 +1754,7 @@ button:focus-visible {
 .cg-mode-badge {
   color:#061824;
   background:linear-gradient(135deg,#8ff5ff,#ffd86b);
+  border:0;
   border-radius:999px;
   align-items:center;
   gap:7px;
@@ -1777,7 +1765,10 @@ button:focus-visible {
   font-weight:1000;
   letter-spacing:.13em;
   display:flex;
-  box-shadow:0 0 24px #6aeaff47
+  box-shadow:0 0 24px #6aeaff47;
+  cursor:pointer;
+  font-family:inherit;
+  transition:background 180ms ease,color 180ms ease,box-shadow 180ms ease,filter 180ms ease,transform 180ms ease
 }
 .cg-mode-badge span {
   background:#0d94ad;
@@ -1785,6 +1776,26 @@ button:focus-visible {
   width:7px;
   height:7px;
   box-shadow:0 0 0 4px #0d94ad24
+}
+.cg-mode-badge:hover {
+  transform:translateY(-1px)
+}
+.cg-mode-badge:active {
+  transform:translateY(1px)
+}
+.cg-mode-badge:focus-visible {
+  outline:3px solid #eefdff;
+  outline-offset:3px
+}
+.cg-mode-badge.is-disabled {
+  color:#aab4bd;
+  background:linear-gradient(135deg,#46515a,#252d34);
+  box-shadow:none;
+  filter:saturate(.25)
+}
+.cg-mode-badge.is-disabled span {
+  background:#89939b;
+  box-shadow:0 0 0 4px #89939b24
 }
 .gallery-button {
   align-content:center;
@@ -2223,3 +2234,105 @@ button:focus-visible {
   .cg-unlock-overlay.is-photo .cg-photo-frame{opacity:1;transform:rotate(-1.2deg)}
   .cg-unlock-overlay.is-photo .cg-unlock-notice{opacity:1;transform:none}
 }
+
+/* Mobile secret-code pad */
+.touch-konami-pad {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(4, 8, 20, .76);
+  font-family: system-ui, sans-serif;
+  touch-action: manipulation;
+}
+.touch-konami-panel {
+  position: relative;
+  box-sizing: border-box;
+  width: min(360px, calc(100vw - 36px));
+  padding: 22px;
+  border: 1px solid rgba(255, 255, 255, .24);
+  border-radius: 24px;
+  background: linear-gradient(145deg, #17233d, #0b1121);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .48);
+  color: #fff;
+}
+.touch-konami-title {
+  color: #9eeaff;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: .22em;
+  text-align: center;
+}
+.touch-konami-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .09);
+  color: #fff;
+  font-size: 25px;
+  cursor: pointer;
+}
+.touch-konami-progress {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin: 16px 0 18px;
+}
+.touch-konami-progress i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .2);
+}
+.touch-konami-progress i.on {
+  background: #63e6ff;
+  box-shadow: 0 0 10px #63e6ff;
+}
+.touch-konami-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(14px, 7vw, 28px);
+}
+.touch-konami-dpad {
+  display: grid;
+  grid-template: repeat(3, 54px) / repeat(3, 54px);
+}
+.touch-konami-key {
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 16px;
+  background: #253657;
+  box-shadow: inset 0 -4px rgba(0, 0, 0, .22);
+  color: #fff;
+  font: 900 22px/1 system-ui;
+  cursor: pointer;
+}
+.touch-konami-key:active {
+  transform: translateY(2px);
+  background: #334a73;
+  box-shadow: none;
+}
+.touch-konami-up { grid-area: 1 / 2; }
+.touch-konami-left { grid-area: 2 / 1; }
+.touch-konami-down { grid-area: 2 / 2; }
+.touch-konami-right { grid-area: 2 / 3; }
+.touch-konami-ab {
+  display: flex;
+  gap: 10px;
+  transform: rotate(-12deg);
+}
+.touch-konami-ab .touch-konami-key {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: #d44971;
+}
+.touch-konami-ab .touch-konami-key:last-child { background: #3ea7df; }

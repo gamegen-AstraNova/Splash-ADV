@@ -3,6 +3,10 @@ window.__GAME_I18N_SOURCE_LANG__ = "zh-TW";
 window.__GAME_I18N_PACKS__ = {
   "en": {
     "泳裝與 CG 模式已啟用": "Swimsuit and CG modes activated",
+    "已切換為一般模式": "Switched to normal mode",
+    "開啟 CG 模式": "Enable CG mode",
+    "關閉 CG 模式": "Disable CG mode",
+    "點擊切換 CG／一般模式": "Click to switch between CG and normal mode",
     "CG 圖鑑": "CG Gallery",
     "勝利": "Victory",
     "失敗": "Defeat",
@@ -139,6 +143,10 @@ window.__GAME_I18N_PACKS__ = {
   },
   "zh-TW": {
     "泳裝與 CG 模式已啟用": "泳裝與 CG 模式已啟用",
+    "已切換為一般模式": "已切換為一般模式",
+    "開啟 CG 模式": "開啟 CG 模式",
+    "關閉 CG 模式": "關閉 CG 模式",
+    "點擊切換 CG／一般模式": "點擊切換 CG／一般模式",
     "CG 圖鑑": "CG 圖鑑",
     "勝利": "勝利",
     "失敗": "失敗",
@@ -275,6 +283,10 @@ window.__GAME_I18N_PACKS__ = {
   },
   "zh-CN": {
     "泳裝與 CG 模式已啟用": "泳装与 CG 模式已启用",
+    "已切換為一般模式": "已切换为普通模式",
+    "開啟 CG 模式": "开启 CG 模式",
+    "關閉 CG 模式": "关闭 CG 模式",
+    "點擊切換 CG／一般模式": "点击切换 CG／普通模式",
     "CG 圖鑑": "CG 图鉴",
     "勝利": "胜利",
     "失敗": "失败",
@@ -411,6 +423,10 @@ window.__GAME_I18N_PACKS__ = {
   },
   "ja": {
     "泳裝與 CG 模式已啟用": "水着・CGモードを有効化しました",
+    "已切換為一般模式": "通常モードに切り替えました",
+    "開啟 CG 模式": "CGモードを有効にする",
+    "關閉 CG 模式": "CGモードを無効にする",
+    "點擊切換 CG／一般模式": "クリックしてCG／通常モードを切り替える",
     "CG 圖鑑": "CGギャラリー",
     "勝利": "勝利",
     "失敗": "敗北",

@@ -42,6 +42,49 @@
     "a",
   ];
 
+  function installTouchKonamiPad(feedKey) {
+    const code = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "b", "a"];
+    const media = window.matchMedia("(max-width: 900px), (pointer: coarse)");
+    let timer = 0;
+    let pointer = -1;
+    let startX = 0;
+    let startY = 0;
+    let consumed = false;
+    const cancel = () => { window.clearTimeout(timer); timer = 0; };
+    const open = () => {
+      if (!media.matches || document.querySelector(".touch-konami-pad")) return;
+      consumed = true;
+      let progress = 0;
+      const overlay = document.createElement("div");
+      overlay.className = "touch-konami-pad";
+      overlay.innerHTML = `<section class="touch-konami-panel" role="dialog" aria-modal="true" aria-label="Secret code input"><button type="button" class="touch-konami-close" aria-label="Close">×</button><div class="touch-konami-title">SECRET INPUT</div><div class="touch-konami-progress" aria-hidden="true">${code.map(() => "<i></i>").join("")}</div><div class="touch-konami-controls"><div class="touch-konami-dpad"><button type="button" class="touch-konami-key touch-konami-up" data-konami-key="ArrowUp" aria-label="Up">↑</button><button type="button" class="touch-konami-key touch-konami-left" data-konami-key="ArrowLeft" aria-label="Left">←</button><button type="button" class="touch-konami-key touch-konami-down" data-konami-key="ArrowDown" aria-label="Down">↓</button><button type="button" class="touch-konami-key touch-konami-right" data-konami-key="ArrowRight" aria-label="Right">→</button></div><div class="touch-konami-ab"><button type="button" class="touch-konami-key" data-konami-key="b">B</button><button type="button" class="touch-konami-key" data-konami-key="a">A</button></div></div></section>`;
+      const close = () => overlay.remove();
+      overlay.addEventListener("click", (event) => {
+        if (event.target === overlay || event.target.closest(".touch-konami-close")) { close(); return; }
+        const button = event.target.closest("[data-konami-key]");
+        if (!button) return;
+        const key = button.dataset.konamiKey;
+        feedKey(key);
+        progress = key === code[progress] ? progress + 1 : key === code[0] ? 1 : 0;
+        overlay.querySelectorAll(".touch-konami-progress i").forEach((dot, index) => dot.classList.toggle("on", index < progress));
+        if (progress === code.length) window.setTimeout(close, 420);
+      });
+      document.body.appendChild(overlay);
+    };
+    document.addEventListener("pointerdown", (event) => {
+      if (!media.matches || event.clientX > 72 || event.clientY > 72) return;
+      pointer = event.pointerId;
+      startX = event.clientX;
+      startY = event.clientY;
+      consumed = false;
+      cancel();
+      timer = window.setTimeout(open, 1200);
+    }, true);
+    document.addEventListener("pointermove", (event) => { if (event.pointerId === pointer && Math.hypot(event.clientX - startX, event.clientY - startY) > 14) cancel(); }, true);
+    ["pointerup", "pointercancel"].forEach((type) => document.addEventListener(type, (event) => { if (event.pointerId !== pointer) return; cancel(); pointer = -1; if (consumed) { event.preventDefault(); event.stopPropagation(); } }, true));
+    document.addEventListener("contextmenu", (event) => { if (media.matches && event.clientX <= 72 && event.clientY <= 72) event.preventDefault(); }, true);
+  }
+
   const STORAGE = {
     character: "splash-adv-selected-character",
     cleared: "splash-adv-highest-cleared",
@@ -49,6 +92,7 @@
     bgmEnabled: "splash-adv-bgm-enabled",
     sfxEnabled: "splash-adv-sfx-enabled",
     cgMode: "splash-adv-cg-mode-enabled",
+    cgModeUnlocked: "splash-adv-cg-mode-unlocked",
     unlockedCgs: "splash-adv-unlocked-cgs",
   };
 
@@ -270,6 +314,7 @@
 
   let selectedCharacter;
   let cgModeEnabled;
+  let cgModeUnlocked;
   let unlockedCgs;
   let cheatProgress = 0;
   let game = null;
@@ -375,12 +420,16 @@
 
   let bgmEnabled = safeStorage.get(STORAGE.bgmEnabled) !== "false";
   let sfxEnabled = safeStorage.get(STORAGE.sfxEnabled) !== "false";
-  cgModeEnabled = safeStorage.get(STORAGE.cgMode) === "true";
+  const storedCgMode = safeStorage.get(STORAGE.cgMode);
+  cgModeUnlocked = safeStorage.get(STORAGE.cgModeUnlocked) === "true" || storedCgMode === "true";
+  cgModeEnabled = cgModeUnlocked && storedCgMode !== "false";
+  if (cgModeUnlocked) safeStorage.set(STORAGE.cgModeUnlocked, "true");
   unlockedCgs = readUnlockedCgs();
   selectedCharacter = readCharacter();
 
   function applyCgModeState() {
     document.documentElement.classList.toggle("cg-mode-enabled", cgModeEnabled);
+    document.documentElement.classList.toggle("cg-mode-unlocked", cgModeUnlocked);
     document.documentElement.dataset.cgMode = cgModeEnabled ? "enabled" : "disabled";
   }
 
@@ -535,6 +584,7 @@
           safeStorage.remove(STORAGE.cleared);
           safeStorage.remove(STORAGE.best);
           safeStorage.remove(STORAGE.cgMode);
+          safeStorage.remove(STORAGE.cgModeUnlocked);
           safeStorage.remove(STORAGE.unlockedCgs);
           window.location.reload();
         });
@@ -597,14 +647,14 @@
     return { ...character, image: characterAsset(character, "sprite") };
   }
 
-  function showCgModeToast() {
+  function showCgModeToast(message = "泳裝與 CG 模式已啟用") {
     document.querySelector(".cg-mode-toast")?.remove();
     const toast = document.createElement("div");
     toast.className = "cg-mode-toast";
     toast.setAttribute("role", "status");
     toast.innerHTML = `
       <strong>CG MODE</strong>
-      <span>泳裝與 CG 模式已啟用</span>
+      <span>${message}</span>
     `;
     document.body.append(toast);
     window.setTimeout(() => toast.classList.add("is-visible"), 20);
@@ -614,30 +664,31 @@
     }, 2800);
   }
 
-  function unlockCgMode() {
-    if (cgModeEnabled) return;
-    cgModeEnabled = true;
-    cheatProgress = 0;
-    safeStorage.set(STORAGE.cgMode, "true");
+  function setCgModeEnabled(enabled) {
+    if (!cgModeUnlocked) return;
+    cgModeEnabled = Boolean(enabled);
+    safeStorage.set(STORAGE.cgMode, String(cgModeEnabled));
     applyCgModeState();
     const isMenu = Boolean(document.querySelector(".menu-screen"));
     if (isMenu) renderMenu();
-    showCgModeToast();
+    showCgModeToast(cgModeEnabled ? "泳裝與 CG 模式已啟用" : "已切換為一般模式");
     playSoundEffect(uiConfirmSound);
     dirty = true;
   }
 
-  function trackCheat(event) {
-    if (cgModeEnabled || event.repeat || event.ctrlKey || event.metaKey || event.altKey) {
+  function unlockCgMode() {
+    if (cgModeUnlocked) return;
+    cgModeUnlocked = true;
+    cheatProgress = 0;
+    safeStorage.set(STORAGE.cgModeUnlocked, "true");
+    setCgModeEnabled(true);
+  }
+
+  function trackCheatKey(key) {
+    if (cgModeUnlocked) {
       return false;
     }
-    if (
-      event.target instanceof Element &&
-      event.target.closest("input, textarea, select, [contenteditable='true']")
-    ) {
-      return false;
-    }
-    const normalized = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+    const normalized = key.length === 1 ? key.toLowerCase() : key;
     if (normalized === CHEAT_SEQUENCE[cheatProgress]) {
       cheatProgress += 1;
       if (cheatProgress === CHEAT_SEQUENCE.length) unlockCgMode();
@@ -645,6 +696,17 @@
     }
     cheatProgress = normalized === CHEAT_SEQUENCE[0] ? 1 : 0;
     return cheatProgress === 1;
+  }
+
+  function trackCheat(event) {
+    if (event.repeat || event.ctrlKey || event.metaKey || event.altKey) return false;
+    if (
+      event.target instanceof Element &&
+      event.target.closest("input, textarea, select, [contenteditable='true']")
+    ) {
+      return false;
+    }
+    return trackCheatKey(event.key);
   }
 
   function unlockCg(entry) {
@@ -746,7 +808,11 @@
         <section class="menu-card">
           <div class="menu-card-heading">
             <div class="eyebrow">AstraNova</div>
-            ${cgModeEnabled ? '<div class="cg-mode-badge"><span></span>CG MODE</div>' : ""}
+            ${
+              cgModeUnlocked
+                ? `<button class="cg-mode-badge${cgModeEnabled ? "" : " is-disabled"}" type="button" data-action="toggle-cg-mode" data-ui-sound="custom" aria-pressed="${cgModeEnabled}" aria-label="${cgModeEnabled ? "關閉 CG 模式" : "開啟 CG 模式"}" title="點擊切換 CG／一般模式"><span></span>CG MODE</button>`
+                : ""
+            }
           </div>
           <h1>Splash ADV</h1>
           <p class="menu-lead">突破五個區域，阻止海盜空港的入侵！</p>
@@ -786,6 +852,9 @@
     document
       .querySelector('[data-action="gallery"]')
       ?.addEventListener("click", () => showCgGallery(selectedCharacter));
+    document
+      .querySelector('[data-action="toggle-cg-mode"]')
+      ?.addEventListener("click", () => setCgModeEnabled(!cgModeEnabled));
 
     for (const option of document.querySelectorAll(".character-option")) {
       option.addEventListener("click", () => {
@@ -2397,6 +2466,7 @@
   armMusicActivation();
   armUiSoundFeedback();
   applyCgModeState();
+  installTouchKonamiPad(trackCheatKey);
 
   renderMenu();
 
