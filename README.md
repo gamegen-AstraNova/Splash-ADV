@@ -1,60 +1,36 @@
 # Splash ADV
 
-純本地靜態瀏覽器遊戲，不需要安裝套件、啟動開發伺服器或發布正式版本。
+GameGen 可直接遊玩的網頁交付版本。根目錄是已建置的 React 19 遊戲，含 9:16 動態封面，採 HTML ZIP 直接上傳模式。
 
-## 開啟方式
+## 本地預覽
 
-直接開啟 `index.html` 即可遊玩。
+在本目錄執行 `python -m http.server 8000`，瀏覽 `http://localhost:8000/`。請使用 HTTP 服務載入設定與資產。
 
-## 操作
+## GameGen 打包
 
-- 方向鍵或 WASD：上下左右移動
-- Space：放置水泡
-- 1：騎乘極速烏龜，移動速度提升 20%；烏龜會持續存在，直到替玩家擋下一次傷害，該次不會困泡或扣命
-- 2：使用救援針
-- 3：使用水晶盾
-- 觸控：左半部按下會在觸點生成虛擬搖桿；拖曳白色小圓移動，放開後搖桿消失
-- 觸控：右半部點按放置水泡；長按開啟救援道具選單
-- 觸控支援雙指操作，可在左手持續移動時用右手放置水泡或選擇救援道具
-- 首頁與遊戲右上角的 🎵、🔊 可分別切換 BGM 與音效；灰色代表關閉，彩色代表開啟。
-- 密技「↑ ↑ ↓ ↓ ← → ← → B A」會永久啟用泳裝／CG 模式；CG 仍須依角色、關卡與勝敗逐張解鎖，不會一次全開。
-- 密技模式的三張泳裝首頁立繪及遊戲內泳裝小人均已接入；泳裝小人位於 `sprites/swimsuit/`，CG MODE 開啟時會自動切換。
-- CG 模式下，關卡結束會先全畫面播放對應動畫，再經閃白拍照效果切成靜態 CG；點擊照片畫面任意處後才回到通關／失敗結果。
-- 首頁的「CG 圖鑑」只顯示靜態預覽；點擊已解鎖項目會全螢幕循環播放動畫，並可切換靜態／動態。
-- 首頁的「重置進度」會在二次確認後清除通關紀錄、最佳時間、CG 解鎖與密技模式，不影響角色選擇及音訊設定。
+在本目錄執行 PowerShell：
 
-角色與敵人依格子判定，但會在相鄰格子間平滑移動。敵人平時依固定路線巡邏，玩家接近且路線可通行時才會追擊；走到下一格遇見水泡時才會改道。
+```powershell
+Compress-Archive -Path index.html,poster.webp,assets,common,config -DestinationPath ../splash-adv.zip -Force
+```
 
-## 困泡與擊倒規則
+將 `splash-adv.zip` 上傳後台。ZIP 根目錄須直接包含 `index.html`、`poster.webp`、`assets/`、`common/`、`config/`，不可再包一層目錄。專案及 ZIP 名稱只保留遊戲名稱，不添加 noskin 或 html 後綴。
 
-- 我方或敵方受到致命傷時不會立刻消失，而是先困入泡泡。
-- 一般怪物被水柱命中一次即困泡；第五關 BOSS 前兩次只扣除生命，第三次才困泡。
-- 困泡角色碰到不同陣營時，泡泡破裂並判定死亡；我方會扣一條命並返回出生點，但保留場上的水球與水柱，敵方則被移除。
-- 接觸判定已依陣營拆分：不同陣營會擊破泡泡，同陣營則會解救；未來加入雙人模式時可直接沿用，不需要重寫傷害流程。
-- 所有角色永久套用輕微呼吸動態；困泡時會額外上下漂浮，移動速度統一降為原本的 50%。
-- 受困敵人仍會依原本規則以半速移動，但不會再傷害我方；我方受困期間也會以半速移動，且不能放置水泡。
+## 檔案與維護
 
-## 專案結構
+- `index.html`：已建置入口。
+- `assets/`：已編譯 JS/CSS。
+- `common/textures/`、`common/audio/`：遊戲圖片與音訊；其他媒體依 `config/asset-manifest.json` 保留。
+- `config/language/`：英文、繁體中文、簡體中文、日文；預設英文。
+- `config/generalConfiguration.json`：載入設定；本交付版本使用包內資產，本地預覽不需要後台注入 assets.baseUrl。
+- `poster.webp`：936 × 1664、精確 9:16、無損 WebP，供四語系共用；此為平台封面，不加入遊戲內資產表。
 
-- `index.html`：本地入口
-- `game.js`：完整遊戲邏輯與介面
-- `styles.css`：遊戲、角色選擇、角色動態與 UI 回饋的單一樣式來源
-- `assets/audio/splash-adv-pirate-bgm.mp3`：循環播放的海盜風遊戲 BGM
-- `assets/audio/splash-adv-boss-bgm.mp3`：第五關「羅德曼尼號」專屬 BOSS BGM
-- `assets/audio/bubble-trap-sfx.mp3`：任一角色受到致命傷並進入泡泡時播放的音效
-- `assets/audio/bubble-pop-sfx.mp3`：困泡角色被不同陣營接觸、泡泡破裂並死亡時播放的音效
-- `assets/audio/water-ball-explosion-sfx.mp3`：場上任一水球爆炸時播放的音效
-- `assets/audio/rescue-needle-sfx.mp3`：成功使用救援針刺破困泡時播放的音效
-- `assets/audio/crystal-shield-activation-sfx.mp3`：成功啟動水晶盾時播放的音效
-- `assets/audio/speed-turtle-activation-sfx.mp3`：成功使用極速烏龜時播放一次的音效
-- `assets/audio/item-pickup-sfx.mp3`：實際撿到任一道具時播放一次的音效
-- `assets/audio/ui-feedback-sfx.mp3`：UI 回饋音基底；程式以不同音高與音量區分確認、一般互動及不可用狀態
-- `assets/audio/stage-victory-fanfare-sfx.mp3`：每次關卡勝利時播放一次的號角音效
-- `assets/audio/camera-shutter-sfx.mp3`：CG 動畫閃白並定格成照片時播放的快門音效
-- `assets/cg/`：三名角色、五關勝敗各一組 WebP 靜態 CG 與 MP4 動畫
-- `art/`：首頁主視覺
-- `sprites/`：角色、敵人、地圖與道具 PNG
+此儲存庫本次同步的是使用者提供的建置產物，未包含對應 React／TypeScript 原始碼或依賴鎖定檔，無法從這份 checkout 重新編譯。後續修改玩法須取得對應原始碼後重新建置；本次取代的舊版獨立 JS 與舊素材可由 Git 歷史查閱。
 
-泳裝版首頁立繪、遊戲角色圖與拍照音效均已接入；CG MODE 開啟時會切換泳裝素材，動畫結束閃白時會播放快門音效並切成靜態照片。
+## 驗證與限制
 
-本專案不含 React、Vinext、RSC、npm 套件、託管設定或正式站部署依賴。
+2026-09-10：交付 ZIP 的 CRC、入口、檔名唯一性及封面解碼／比例均通過。同步後每個執行檔案均與交付 ZIP 逐一比對 SHA-256，並在 HTTP 子路徑逐檔讀回核對內容一致。初次交付已在 HTTP 子路徑抽查進入遊戲及玩法；這不代表完整回歸測試通過。
+
+- Splash 的部分關卡選單仍混入中文。
+- 上述版本沿用已驗證交付包；本次同步未重新編譯或修改遊戲 JS、CSS、語系及媒體。
+- 尚未驗證 GameGen 後台實際上傳結果、全關卡、四語系完整流程及遠端 style/commonPath 故障降級。

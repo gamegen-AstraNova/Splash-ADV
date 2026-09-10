@@ -1,0 +1,665 @@
+{
+  "version": 2,
+  "assets": [
+    {
+      "id": "bg_keyart_background",
+      "type": "image",
+      "relativePath": "textures/bg_keyart_background.png",
+      "cssVariable": null
+    },
+    {
+      "id": "deco_keyart_asteria",
+      "type": "image",
+      "relativePath": "textures/deco_keyart_asteria.png",
+      "cssVariable": null
+    },
+    {
+      "id": "deco_keyart_lumi",
+      "type": "image",
+      "relativePath": "textures/deco_keyart_lumi.png",
+      "cssVariable": null
+    },
+    {
+      "id": "deco_keyart_water_balls_01",
+      "type": "image",
+      "relativePath": "textures/deco_keyart_water_balls_01.png",
+      "cssVariable": null
+    },
+    {
+      "id": "deco_keyart_water_balls_02",
+      "type": "image",
+      "relativePath": "textures/deco_keyart_water_balls_02.png",
+      "cssVariable": null
+    },
+    {
+      "id": "deco_keyart_water_balls_03",
+      "type": "image",
+      "relativePath": "textures/deco_keyart_water_balls_03.png",
+      "cssVariable": null
+    },
+    {
+      "id": "deco_keyart_water_balls_04",
+      "type": "image",
+      "relativePath": "textures/deco_keyart_water_balls_04.png",
+      "cssVariable": null
+    },
+    {
+      "id": "deco_keyart_water_balls_05",
+      "type": "image",
+      "relativePath": "textures/deco_keyart_water_balls_05.png",
+      "cssVariable": null
+    },
+    {
+      "id": "deco_keyart_water_balls_06",
+      "type": "image",
+      "relativePath": "textures/deco_keyart_water_balls_06.png",
+      "cssVariable": null
+    },
+    {
+      "id": "deco_keyart_nyx",
+      "type": "image",
+      "relativePath": "textures/deco_keyart_nyx.png",
+      "cssVariable": null
+    },
+    {
+      "id": "deco_keyart_water_splashes",
+      "type": "image",
+      "relativePath": "textures/deco_keyart_water_splashes.png",
+      "cssVariable": null
+    },
+    {
+      "id": "deco_keyart_asteria_swimsuit",
+      "type": "image",
+      "relativePath": "textures/deco_keyart_asteria_swimsuit.png",
+      "cssVariable": null
+    },
+    {
+      "id": "deco_keyart_lumi_swimsuit",
+      "type": "image",
+      "relativePath": "textures/deco_keyart_lumi_swimsuit.png",
+      "cssVariable": null
+    },
+    {
+      "id": "deco_keyart_nyx_swimsuit",
+      "type": "image",
+      "relativePath": "textures/deco_keyart_nyx_swimsuit.png",
+      "cssVariable": null
+    },
+    {
+      "id": "sfx_bubble_pop_sfx",
+      "type": "audio",
+      "relativePath": "audio/sfx_bubble_pop_sfx.mp3",
+      "cssVariable": null
+    },
+    {
+      "id": "sfx_bubble_trap_sfx",
+      "type": "audio",
+      "relativePath": "audio/sfx_bubble_trap_sfx.mp3",
+      "cssVariable": null
+    },
+    {
+      "id": "sfx_camera_shutter_sfx",
+      "type": "audio",
+      "relativePath": "audio/sfx_camera_shutter_sfx.mp3",
+      "cssVariable": null
+    },
+    {
+      "id": "sfx_crystal_shield_activation_sfx",
+      "type": "audio",
+      "relativePath": "audio/sfx_crystal_shield_activation_sfx.mp3",
+      "cssVariable": null
+    },
+    {
+      "id": "sfx_item_pickup_sfx",
+      "type": "audio",
+      "relativePath": "audio/sfx_item_pickup_sfx.mp3",
+      "cssVariable": null
+    },
+    {
+      "id": "sfx_rescue_needle_sfx",
+      "type": "audio",
+      "relativePath": "audio/sfx_rescue_needle_sfx.mp3",
+      "cssVariable": null
+    },
+    {
+      "id": "sfx_speed_turtle_activation_sfx",
+      "type": "audio",
+      "relativePath": "audio/sfx_speed_turtle_activation_sfx.mp3",
+      "cssVariable": null
+    },
+    {
+      "id": "bgm_splash_adv_boss_bgm",
+      "type": "audio",
+      "relativePath": "audio/bgm_splash_adv_boss_bgm.mp3",
+      "cssVariable": null
+    },
+    {
+      "id": "bgm_splash_adv_pirate_bgm",
+      "type": "audio",
+      "relativePath": "audio/bgm_splash_adv_pirate_bgm.mp3",
+      "cssVariable": null
+    },
+    {
+      "id": "sfx_stage_victory_fanfare_sfx",
+      "type": "audio",
+      "relativePath": "audio/sfx_stage_victory_fanfare_sfx.mp3",
+      "cssVariable": null
+    },
+    {
+      "id": "sfx_ui_feedback_sfx",
+      "type": "audio",
+      "relativePath": "audio/sfx_ui_feedback_sfx.mp3",
+      "cssVariable": null
+    },
+    {
+      "id": "sfx_water_ball_explosion_sfx",
+      "type": "audio",
+      "relativePath": "audio/sfx_water_ball_explosion_sfx.mp3",
+      "cssVariable": null
+    },
+    {
+      "id": "seq_cg_asteria_stage_01_defeat",
+      "type": "video",
+      "relativePath": "video/seq_cg_asteria_stage_01_defeat.mp4",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_cg_asteria_stage_01_defeat",
+      "type": "image",
+      "relativePath": "textures/bg_cg_asteria_stage_01_defeat.webp",
+      "cssVariable": null
+    },
+    {
+      "id": "seq_cg_asteria_stage_01_victory",
+      "type": "video",
+      "relativePath": "video/seq_cg_asteria_stage_01_victory.mp4",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_cg_asteria_stage_01_victory",
+      "type": "image",
+      "relativePath": "textures/bg_cg_asteria_stage_01_victory.webp",
+      "cssVariable": null
+    },
+    {
+      "id": "seq_cg_asteria_stage_02_defeat",
+      "type": "video",
+      "relativePath": "video/seq_cg_asteria_stage_02_defeat.mp4",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_cg_asteria_stage_02_defeat",
+      "type": "image",
+      "relativePath": "textures/bg_cg_asteria_stage_02_defeat.webp",
+      "cssVariable": null
+    },
+    {
+      "id": "seq_cg_asteria_stage_02_victory",
+      "type": "video",
+      "relativePath": "video/seq_cg_asteria_stage_02_victory.mp4",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_cg_asteria_stage_02_victory",
+      "type": "image",
+      "relativePath": "textures/bg_cg_asteria_stage_02_victory.webp",
+      "cssVariable": null
+    },
+    {
+      "id": "seq_cg_asteria_stage_03_defeat",
+      "type": "video",
+      "relativePath": "video/seq_cg_asteria_stage_03_defeat.mp4",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_cg_asteria_stage_03_defeat",
+      "type": "image",
+      "relativePath": "textures/bg_cg_asteria_stage_03_defeat.webp",
+      "cssVariable": null
+    },
+    {
+      "id": "seq_cg_asteria_stage_03_victory",
+      "type": "video",
+      "relativePath": "video/seq_cg_asteria_stage_03_victory.mp4",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_cg_asteria_stage_03_victory",
+      "type": "image",
+      "relativePath": "textures/bg_cg_asteria_stage_03_victory.webp",
+      "cssVariable": null
+    },
+    {
+      "id": "seq_cg_asteria_stage_04_defeat",
+      "type": "video",
+      "relativePath": "video/seq_cg_asteria_stage_04_defeat.mp4",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_cg_asteria_stage_04_defeat",
+      "type": "image",
+      "relativePath": "textures/bg_cg_asteria_stage_04_defeat.webp",
+      "cssVariable": null
+    },
+    {
+      "id": "seq_cg_asteria_stage_04_victory",
+      "type": "video",
+      "relativePath": "video/seq_cg_asteria_stage_04_victory.mp4",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_cg_asteria_stage_04_victory",
+      "type": "image",
+      "relativePath": "textures/bg_cg_asteria_stage_04_victory.webp",
+      "cssVariable": null
+    },
+    {
+      "id": "seq_cg_asteria_stage_05_defeat",
+      "type": "video",
+      "relativePath": "video/seq_cg_asteria_stage_05_defeat.mp4",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_cg_asteria_stage_05_defeat",
+      "type": "image",
+      "relativePath": "textures/bg_cg_asteria_stage_05_defeat.webp",
+      "cssVariable": null
+    },
+    {
+      "id": "seq_cg_asteria_stage_05_victory",
+      "type": "video",
+      "relativePath": "video/seq_cg_asteria_stage_05_victory.mp4",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_cg_asteria_stage_05_victory",
+      "type": "image",
+      "relativePath": "textures/bg_cg_asteria_stage_05_victory.webp",
+      "cssVariable": null
+    },
+    {
+      "id": "seq_cg_lumi_stage_01_defeat",
+      "type": "video",
+      "relativePath": "video/seq_cg_lumi_stage_01_defeat.mp4",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_cg_lumi_stage_01_defeat",
+      "type": "image",
+      "relativePath": "textures/bg_cg_lumi_stage_01_defeat.webp",
+      "cssVariable": null
+    },
+    {
+      "id": "seq_cg_lumi_stage_01_victory",
+      "type": "video",
+      "relativePath": "video/seq_cg_lumi_stage_01_victory.mp4",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_cg_lumi_stage_01_victory",
+      "type": "image",
+      "relativePath": "textures/bg_cg_lumi_stage_01_victory.webp",
+      "cssVariable": null
+    },
+    {
+      "id": "seq_cg_lumi_stage_02_defeat",
+      "type": "video",
+      "relativePath": "video/seq_cg_lumi_stage_02_defeat.mp4",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_cg_lumi_stage_02_defeat",
+      "type": "image",
+      "relativePath": "textures/bg_cg_lumi_stage_02_defeat.webp",
+      "cssVariable": null
+    },
+    {
+      "id": "seq_cg_lumi_stage_02_victory",
+      "type": "video",
+      "relativePath": "video/seq_cg_lumi_stage_02_victory.mp4",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_cg_lumi_stage_02_victory",
+      "type": "image",
+      "relativePath": "textures/bg_cg_lumi_stage_02_victory.webp",
+      "cssVariable": null
+    },
+    {
+      "id": "seq_cg_lumi_stage_03_defeat",
+      "type": "video",
+      "relativePath": "video/seq_cg_lumi_stage_03_defeat.mp4",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_cg_lumi_stage_03_defeat",
+      "type": "image",
+      "relativePath": "textures/bg_cg_lumi_stage_03_defeat.webp",
+      "cssVariable": null
+    },
+    {
+      "id": "seq_cg_lumi_stage_03_victory",
+      "type": "video",
+      "relativePath": "video/seq_cg_lumi_stage_03_victory.mp4",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_cg_lumi_stage_03_victory",
+      "type": "image",
+      "relativePath": "textures/bg_cg_lumi_stage_03_victory.webp",
+      "cssVariable": null
+    },
+    {
+      "id": "seq_cg_lumi_stage_04_defeat",
+      "type": "video",
+      "relativePath": "video/seq_cg_lumi_stage_04_defeat.mp4",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_cg_lumi_stage_04_defeat",
+      "type": "image",
+      "relativePath": "textures/bg_cg_lumi_stage_04_defeat.webp",
+      "cssVariable": null
+    },
+    {
+      "id": "seq_cg_lumi_stage_04_victory",
+      "type": "video",
+      "relativePath": "video/seq_cg_lumi_stage_04_victory.mp4",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_cg_lumi_stage_04_victory",
+      "type": "image",
+      "relativePath": "textures/bg_cg_lumi_stage_04_victory.webp",
+      "cssVariable": null
+    },
+    {
+      "id": "seq_cg_lumi_stage_05_defeat",
+      "type": "video",
+      "relativePath": "video/seq_cg_lumi_stage_05_defeat.mp4",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_cg_lumi_stage_05_defeat",
+      "type": "image",
+      "relativePath": "textures/bg_cg_lumi_stage_05_defeat.webp",
+      "cssVariable": null
+    },
+    {
+      "id": "seq_cg_lumi_stage_05_victory",
+      "type": "video",
+      "relativePath": "video/seq_cg_lumi_stage_05_victory.mp4",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_cg_lumi_stage_05_victory",
+      "type": "image",
+      "relativePath": "textures/bg_cg_lumi_stage_05_victory.webp",
+      "cssVariable": null
+    },
+    {
+      "id": "seq_cg_nyx_stage_01_defeat",
+      "type": "video",
+      "relativePath": "video/seq_cg_nyx_stage_01_defeat.mp4",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_cg_nyx_stage_01_defeat",
+      "type": "image",
+      "relativePath": "textures/bg_cg_nyx_stage_01_defeat.webp",
+      "cssVariable": null
+    },
+    {
+      "id": "seq_cg_nyx_stage_01_victory",
+      "type": "video",
+      "relativePath": "video/seq_cg_nyx_stage_01_victory.mp4",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_cg_nyx_stage_01_victory",
+      "type": "image",
+      "relativePath": "textures/bg_cg_nyx_stage_01_victory.webp",
+      "cssVariable": null
+    },
+    {
+      "id": "seq_cg_nyx_stage_02_defeat",
+      "type": "video",
+      "relativePath": "video/seq_cg_nyx_stage_02_defeat.mp4",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_cg_nyx_stage_02_defeat",
+      "type": "image",
+      "relativePath": "textures/bg_cg_nyx_stage_02_defeat.webp",
+      "cssVariable": null
+    },
+    {
+      "id": "seq_cg_nyx_stage_02_victory",
+      "type": "video",
+      "relativePath": "video/seq_cg_nyx_stage_02_victory.mp4",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_cg_nyx_stage_02_victory",
+      "type": "image",
+      "relativePath": "textures/bg_cg_nyx_stage_02_victory.webp",
+      "cssVariable": null
+    },
+    {
+      "id": "seq_cg_nyx_stage_03_defeat",
+      "type": "video",
+      "relativePath": "video/seq_cg_nyx_stage_03_defeat.mp4",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_cg_nyx_stage_03_defeat",
+      "type": "image",
+      "relativePath": "textures/bg_cg_nyx_stage_03_defeat.webp",
+      "cssVariable": null
+    },
+    {
+      "id": "seq_cg_nyx_stage_03_victory",
+      "type": "video",
+      "relativePath": "video/seq_cg_nyx_stage_03_victory.mp4",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_cg_nyx_stage_03_victory",
+      "type": "image",
+      "relativePath": "textures/bg_cg_nyx_stage_03_victory.webp",
+      "cssVariable": null
+    },
+    {
+      "id": "seq_cg_nyx_stage_04_defeat",
+      "type": "video",
+      "relativePath": "video/seq_cg_nyx_stage_04_defeat.mp4",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_cg_nyx_stage_04_defeat",
+      "type": "image",
+      "relativePath": "textures/bg_cg_nyx_stage_04_defeat.webp",
+      "cssVariable": null
+    },
+    {
+      "id": "seq_cg_nyx_stage_04_victory",
+      "type": "video",
+      "relativePath": "video/seq_cg_nyx_stage_04_victory.mp4",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_cg_nyx_stage_04_victory",
+      "type": "image",
+      "relativePath": "textures/bg_cg_nyx_stage_04_victory.webp",
+      "cssVariable": null
+    },
+    {
+      "id": "seq_cg_nyx_stage_05_defeat",
+      "type": "video",
+      "relativePath": "video/seq_cg_nyx_stage_05_defeat.mp4",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_cg_nyx_stage_05_defeat",
+      "type": "image",
+      "relativePath": "textures/bg_cg_nyx_stage_05_defeat.webp",
+      "cssVariable": null
+    },
+    {
+      "id": "seq_cg_nyx_stage_05_victory",
+      "type": "video",
+      "relativePath": "video/seq_cg_nyx_stage_05_victory.mp4",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_cg_nyx_stage_05_victory",
+      "type": "image",
+      "relativePath": "textures/bg_cg_nyx_stage_05_victory.webp",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_stage_01_sunny_canal",
+      "type": "image",
+      "relativePath": "textures/bg_stage_01_sunny_canal.png",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_stage_02_laurel_courtyard",
+      "type": "image",
+      "relativePath": "textures/bg_stage_02_laurel_courtyard.png",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_stage_03_star_sand_ruins",
+      "type": "image",
+      "relativePath": "textures/bg_stage_03_star_sand_ruins.png",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_stage_04_water_city_ring",
+      "type": "image",
+      "relativePath": "textures/bg_stage_04_water_city_ring.png",
+      "cssVariable": null
+    },
+    {
+      "id": "bg_stage_05_rodemanni_deck",
+      "type": "image",
+      "relativePath": "textures/bg_stage_05_rodemanni_deck.png",
+      "cssVariable": null
+    },
+    {
+      "id": "sym_sprites_asteria",
+      "type": "image",
+      "relativePath": "textures/sym_sprites_asteria.png",
+      "cssVariable": null
+    },
+    {
+      "id": "sym_sprites_balloon",
+      "type": "image",
+      "relativePath": "textures/sym_sprites_balloon.png",
+      "cssVariable": null
+    },
+    {
+      "id": "sym_sprites_bat",
+      "type": "image",
+      "relativePath": "textures/sym_sprites_bat.png",
+      "cssVariable": null
+    },
+    {
+      "id": "sym_sprites_capacity_plus",
+      "type": "image",
+      "relativePath": "textures/sym_sprites_capacity_plus.png",
+      "cssVariable": null
+    },
+    {
+      "id": "sym_sprites_crate",
+      "type": "image",
+      "relativePath": "textures/sym_sprites_crate.png",
+      "cssVariable": null
+    },
+    {
+      "id": "sym_sprites_hedge",
+      "type": "image",
+      "relativePath": "textures/sym_sprites_hedge.png",
+      "cssVariable": null
+    },
+    {
+      "id": "sym_sprites_lumi",
+      "type": "image",
+      "relativePath": "textures/sym_sprites_lumi.png",
+      "cssVariable": null
+    },
+    {
+      "id": "sym_sprites_mummy",
+      "type": "image",
+      "relativePath": "textures/sym_sprites_mummy.png",
+      "cssVariable": null
+    },
+    {
+      "id": "sym_sprites_needle",
+      "type": "image",
+      "relativePath": "textures/sym_sprites_needle.png",
+      "cssVariable": null
+    },
+    {
+      "id": "sym_sprites_nyx",
+      "type": "image",
+      "relativePath": "textures/sym_sprites_nyx.png",
+      "cssVariable": null
+    },
+    {
+      "id": "sym_sprites_pirate",
+      "type": "image",
+      "relativePath": "textures/sym_sprites_pirate.png",
+      "cssVariable": null
+    },
+    {
+      "id": "sym_sprites_range_arrow",
+      "type": "image",
+      "relativePath": "textures/sym_sprites_range_arrow.png",
+      "cssVariable": null
+    },
+    {
+      "id": "sym_sprites_shield",
+      "type": "image",
+      "relativePath": "textures/sym_sprites_shield.png",
+      "cssVariable": null
+    },
+    {
+      "id": "sym_sprites_stone",
+      "type": "image",
+      "relativePath": "textures/sym_sprites_stone.png",
+      "cssVariable": null
+    },
+    {
+      "id": "sym_sprites_swimsuit_asteria_swimsuit",
+      "type": "image",
+      "relativePath": "textures/sym_sprites_swimsuit_asteria_swimsuit.png",
+      "cssVariable": null
+    },
+    {
+      "id": "sym_sprites_swimsuit_lumi_swimsuit",
+      "type": "image",
+      "relativePath": "textures/sym_sprites_swimsuit_lumi_swimsuit.png",
+      "cssVariable": null
+    },
+    {
+      "id": "sym_sprites_swimsuit_nyx_swimsuit",
+      "type": "image",
+      "relativePath": "textures/sym_sprites_swimsuit_nyx_swimsuit.png",
+      "cssVariable": null
+    },
+    {
+      "id": "sym_sprites_turtle_badge",
+      "type": "image",
+      "relativePath": "textures/sym_sprites_turtle_badge.png",
+      "cssVariable": null
+    },
+    {
+      "id": "sym_sprites_turtle",
+      "type": "image",
+      "relativePath": "textures/sym_sprites_turtle.png",
+      "cssVariable": null
+    }
+  ]
+}
